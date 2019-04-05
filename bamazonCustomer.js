@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var cTable = require("console.table");
 
 //Configuration of specs used to connect to mysql DB
 var connection = mysql.createConnection({
@@ -42,8 +43,7 @@ function showProducts() {
     var query = "SELECT item_id, product_name, price FROM products"
     connection.query(query, function (err, res) {
         if (err) throw err;
-        console.log(res);
-        // console.log("Please enter the Item ID of the product you'd like to purchase.");
+        console.table(res);
         orderProduct();
     })
 }
@@ -59,7 +59,7 @@ function orderProduct() {
         { // ask user quantity of item
             name: "quantity",
             type: "input",
-            message: "Please enter the quantity you'd like to purchase.",
+            message: "Please enter the quantity you'd like to purchase."
         } //query sql based on answer
     ]).then(function (answer) {
         var query = "SELECT * FROM products WHERE ?"
@@ -68,17 +68,33 @@ function orderProduct() {
             // stock_quantity: answer.quantity,
         }, function (err, res) {
             if (err) throw err;
-            console.log()
-            // inventoryCheck();
-        })
+            // console.log(res[0].stock_quantity)
+            if (answer.quantity > res[0].stock_quantity) {
+                console.log("I'm sorry but we only have " + res[0].stock_quantity + " devices available.")
+            } else {
+                // console.log(res[0].stock_quantity)
+                console.log("Thank you for ordering " + answer.quantity + " " + res[0].product_name + "s.");
+                //display the total cost of their purchase
+                console.log("Your total is $ " + answer.quantity * res[0].price + ".")
+                var query = "UPDATE products SET ? WHERE ?"
+                connection.query(query, [{
+                    stock_quantity: res[0].stock_quantity - answer.quantity
+                }, { item_id: answer.choice }], 
+            function (err, res) {
+            if (err) throw err;
+            connection.end();
+              }  
+            )}
+        });      
     })
 }
 
-//create var to hold quantity response?
-// function inventoryCheck() needs to check quantity entered above and insure we have enough items instock
-//if quantityOrdered > stock_quantity, return/console.log "I'm sorry but we only have X devices available"
-//if store does have enough items, update SQL db to reflect remaining quantity
-//display the total cost of their purchase
 
 
-// }
+
+
+
+
+
+
+
