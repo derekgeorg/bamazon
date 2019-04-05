@@ -40,7 +40,7 @@ function itemList() {
 }
 //This function dipslays items for sale and includes item_id, product_name and prices 
 function showProducts() {
-    var query = "SELECT item_id, product_name, price FROM products"
+    var query = "SELECT item_id, product_name, price, stock_quantity FROM products"
     connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res);
