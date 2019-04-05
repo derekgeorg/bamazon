@@ -34,7 +34,8 @@ function itemList() {
                 showProducts();
             } else {
                 console.log("Thanks for visiting.")
-                itemList();
+                connection.end();
+               
             }
         })
 }
@@ -71,6 +72,7 @@ function orderProduct() {
             // console.log(res[0].stock_quantity)
             if (answer.quantity > res[0].stock_quantity) {
                 console.log("I'm sorry but we only have " + res[0].stock_quantity + " devices available.")
+                connection.end();
             } else {
                 // console.log(res[0].stock_quantity)
                 console.log("Thank you for ordering " + answer.quantity + " " + res[0].product_name + "s.");
